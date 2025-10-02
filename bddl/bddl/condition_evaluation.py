@@ -32,24 +32,16 @@ class Conjunction(Expression):
         if generate_ground_options:
             self.get_ground_options()
 
-    # def evaluate(self):
-    #     self.child_values = [child.evaluate() for child in self.children]
-    #     assert all([val is not None for val in self.child_values]), "child_values has NoneTypes"
-    #     return all(self.child_values)
-
     def evaluate(self):
-        # instead of storing child values, just return the and of all children
-        return all(child.evaluate() for child in self.children)
+        self.child_values = [child.evaluate() for child in self.children]
+        assert all([val is not None for val in self.child_values]), "child_values has NoneTypes"
+        return all(self.child_values)
 
     def get_ground_options(self):
-        # options = list(itertools.product(*[child.flattened_condition_options for child in self.children]))
+        options = list(itertools.product(*[child.flattened_condition_options for child in self.children]))
         self.flattened_condition_options = []
-        # just taking the cartesian product of all child options
-        # could be very large, but not sure how else to do it
-        # could subsample if it gets too large
-        for option in itertools.product(*[child.flattened_condition_options for child in self.children]):
+        for option in options:
             self.flattened_condition_options.append(list(itertools.chain(*option)))
-
 
 class Disjunction(Expression):
     def __init__(self, scope, backend, body, object_map, generate_ground_options=True):
@@ -72,14 +64,10 @@ class Disjunction(Expression):
         if generate_ground_options:
             self.get_ground_options()
 
-    # def evaluate(self):
-    #     self.child_values = [child.evaluate() for child in self.children]
-    #     assert all([val is not None for val in self.child_values]), "child_values has NoneTypes"
-    #     return any(self.child_values)
-
     def evaluate(self):
-        # instead of storing child values, just return the or of all children
-        return any(child.evaluate() for child in self.children)
+        self.child_values = [child.evaluate() for child in self.children]
+        assert all([val is not None for val in self.child_values]), "child_values has NoneTypes"
+        return any(self.child_values)
 
     def get_ground_options(self):
         self.flattened_condition_options = []
